@@ -1,6 +1,6 @@
 ## v0 : Build a Simple Web Application
 
-Installation :
+**Installation :**
 
 ```sh 
 pip install -r requirements.txt
@@ -10,13 +10,14 @@ pip install -r requirements.txt
 python3 main.py
 ```
 
-> Application is running on localhost and port number 8001 
+Application is running on localhost and port number 8001 
 
 
-**Objective:**  
+**Objective :**  
+
 Develop a basic RESTful web application with the following functionalities:
 
-Database Modeling :
+**Database Modeling :**
 
 - Create a database named cakedb and connect to the database `\c cakedb`
 - The scheme of the tables used in our application stored in cakedb is given below :
@@ -50,7 +51,8 @@ Database Modeling :
 |                     | SubTotal          | DECIMAL(10, 2)       | NOT NULL                                    |
 |                     |                   |                      |                                             |
  
-RESTful API-based web application using Flask:
+ ---
+RESTful API-based web application using Flask :
 
 - List of endpoints provided in the application : 
     - **POST** `/signup` : Register a admin use.
@@ -70,7 +72,7 @@ RESTful API-based web application using Flask:
 - The SECRET Key for JWT access token generation and CONNECTION String for Postgresql DB needs to be specified in `.env `file under the application directory.
   
 <br>
-Usage Example :  
+**Usage Example : ** 
 
 - On sending a **GET** request to `/data/users` endpoint I receive a JSON response from the user.
 
