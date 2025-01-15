@@ -3,6 +3,10 @@
 **Objective:**  
 Create a simple front-end web interface to interact with your backend, allowing users to create, update, and view users, products, and orders.
 
+Installation:
+
+Follow the install guide specified in `/app_v1.0` README.md
+
 - The frontend is built using HTML, CSS and Vanilla JS.
 - The frontend communicates to the backend flask applications via API calls which allows us to perform CRUD operations on the schemas.
 - The `index.html` is hosted on S3 bucket and it serves as a static site. The site can be accessed using the url 
@@ -17,8 +21,9 @@ http://cakeshop-frontend.s3-website-us-east-1.amazonaws.com/
     - password : `Admin1234`
 
 **Extras** : 
+  
 - Basic error handling and authorization of API calls is implemented.
 - Access tokens are created at the time of logging in and cached in localstorage.
 - AWS CloudWatch is integrated to monitor the resources and logs the usage.
-
+  
 ![1](../assets/7.png)
