@@ -5,7 +5,7 @@ Enhance the application by adding the ability to upload and store product images
 
 Installation:
 
-Follow the install guide specified in app_v1.0 README.md
+Follow the install guide specified in `/app_v1.0` README.md
 
 - The products endpoint now supports the request body to have an image to be upaloaded along with the product parameters.
 - The image is uploaded to an AWS S3 bucket and the URL is uploaded to the products schema in RDS database.

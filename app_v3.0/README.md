@@ -14,6 +14,8 @@ Follow the install guide specified in `/app_v1.0` README.md
 ```
 http://cakeshop-frontend.s3-website-us-east-1.amazonaws.com/
 ```
+- Click [here](http://cakeshop-frontend.s3-website-us-east-1.amazonaws.com/) to redirect to the aboveurl.
+
 - You can either signup as a new user or login in through the application as a SuperUser, which gives you access to the frontend.
 
 - Login in using the credentials :   
@@ -25,5 +27,10 @@ http://cakeshop-frontend.s3-website-us-east-1.amazonaws.com/
 - Basic error handling and authorization of API calls is implemented.
 - Access tokens are created at the time of logging in and cached in localstorage.
 - AWS CloudWatch is integrated to monitor the resources and logs the usage.
+<<<<<<< HEAD
   
 ![1](../assets/7.png)
+=======
+
+![1](../assets/7.png)
+>>>>>>> 2750cdeb02bb8e860452aa48e7c08251e7149124
