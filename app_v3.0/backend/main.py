@@ -421,7 +421,6 @@ def display_table(table_name):
         cur.execute(f"SELECT * FROM SuperUsers WHERE email = '{current_user_id}'")   
         data = cur.fetchone()
         conn.commit()
-        query = f"SELECT * FROM {table_name};"
         
         if table_name=="accounts":
             query = f"SELECT * FROM orderdetails JOIN orders ON orderdetails.orderid = orders.orderid;"

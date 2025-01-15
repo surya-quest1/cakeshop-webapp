@@ -47,7 +47,7 @@
         <h2 style="display: none;">Hello <span id="user" style="color:#ee6767"></span></h2>
 
     </header>
-    <div style="display: flex; flex-direction: row;">
+    <div id="app-layout" style="display: none; flex-direction: row;">
         <main style="display:flex;flex-direction: column;margin: auto;width: 60%; padding: 20px;">
             <section id="users" class="hidden">
                 <h2>Users</h2>
@@ -227,7 +227,7 @@
                             <td><input
                                     style="vertical-align: middle;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
                                     type="file" id="update-product-image-column" name="product-image-file"
-                                    placeholder="Image" required >
+                                    placeholder="Image" required>
                             </td>
 
                             <td><button type="submit" id="update-product-button"
@@ -243,7 +243,7 @@
 
             <section id="orders" class="hidden">
                 <h2>Orders</h2>
-                <form id="order-form">
+                <!-- <form id="order-form">
                     <input type="text" id="order-user" placeholder="User ID" required
                         style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
                     <input type="text" id="order-product" placeholder="Product ID" required
@@ -251,20 +251,36 @@
                     <button type="submit"
                         style="background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;">Create
                         Order</button>
-                </form>
+                </form> -->
                 <ul id="order-list"></ul>
                 <table id="order-table" border="1">
-                    <thead>
+                    <thead style="background-color: #f9fafb;">
                         <tr>
-                            <th>Order Detail ID</th>
-                            <th>Order ID</th>
-                            <th>User ID</th>
-                            <th>Product ID</th>
-                            <th>Quantity</th>
-                            <th>Subtotal</th>
-                            <th>Total</th>
-                            <th>Date</th>
-                            <th>Actions</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Order Detail ID</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Order ID</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                User ID</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Product ID</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Quantity</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Subtotal</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Total</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Date</th>
+                            <!-- <th style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">Actions</th> -->
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -301,7 +317,7 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);
-                    // displayOrders(data);
+                    displayOrders(data);
                 })
                 .catch(error => {
                     console.error("Error fetching users:", error);
@@ -365,7 +381,7 @@
             });
 
             document.getElementById("user-form").reset();
-            
+
             displayValues();
         }
 
@@ -420,7 +436,7 @@
             });
 
             resultDiv.textContent = "Successfully updated User!";
-            
+
             displayValues();
 
         }
@@ -442,7 +458,7 @@
                 headers: getAuthHeaders(),
             });
             document.getElementById("user-form").reset();
-            
+
             displayValues();
         }
 
@@ -484,8 +500,8 @@
 
             } catch (error) {
                 console.error('Error creating product:', error);
-            }finally{
-                
+            } finally {
+
                 displayValues();
             }
         };
@@ -508,7 +524,7 @@
             document.getElementById("product-form").reset();
 
             console.log(response.json);
-            
+
             displayValues();
         }
 
@@ -569,8 +585,8 @@
 
             } catch (error) {
                 console.error('Error creating product:', error);
-            }finally{
-                
+            } finally {
+
                 displayValues();
             }
         };
@@ -579,7 +595,7 @@
             const userTableBody = document.querySelector("#user-table tbody");
 
             userTableBody.innerHTML = "";
-
+            console.log(users);
             users.forEach(user => {
                 const row = document.createElement("tr");
 
@@ -694,43 +710,56 @@
             });
         }
 
-        async function displayOrders(users) {
-            const userTableBody = document.querySelector("#user-table tbody");
+        async function displayOrders(orders) {
+            const OrderTableBody = document.querySelector("#order-table tbody");
 
-            userTableBody.innerHTML = "";
+            OrderTableBody.innerHTML = "";
 
-            users.forEach(user => {
+            orders.forEach(order => {
                 const row = document.createElement("tr");
 
-                const idCell = document.createElement("td");
-                idCell.textContent = user[0];
-                idCell.style = "background-color: #fff;border: 1px solid #ddd;"
-                const nameCell = document.createElement("td");
-                nameCell.textContent = user[1];
-                nameCell.style = "background-color: #fff;border: 1px solid #ddd;"
+                const orderdetailid = document.createElement("td");
+                orderdetailid.textContent = order['orderdetailid'];
+                orderdetailid.style = "background-color: #fff;border: 1px solid #ddd;"
 
-                const emailCell = document.createElement("td");
-                emailCell.textContent = user[2];
-                emailCell.style = "background-color: #fff;border: 1px solid #ddd;"
+                const orderid = document.createElement("td");
+                orderid.textContent = order['orderid'];
+                orderid.style = "background-color: #fff;border: 1px solid #ddd;"
 
-                const actionsCell = document.createElement("td");
-                const deleteButton = document.createElement("button");
-                const updateButton = document.createElement("button");
+                const userid = document.createElement("td");
+                userid.textContent = order['userid'];
+                userid.style = "background-color: #fff;border: 1px solid #ddd;"
 
-                deleteButton.textContent = "Delete";
-                // deleteButton.onclick = () => deleteUser(user[0]);
+                const productid = document.createElement("td");
+                productid.textContent = order['productid'];
+                productid.style = "background-color: #fff;border: 1px solid #ddd;"
 
-                updateButton.textContent = "Update";
-                // updateButton.onclick = () => updateUser(user[0]);
+                const quantity = document.createElement("td");
+                quantity.textContent = order['quantity'];
+                quantity.style = "background-color: #fff;border: 1px solid #ddd;"
 
-                actionsCell.appendChild(deleteButton);
-                actionsCell.appendChild(updateButton);
-                row.appendChild(idCell);
-                row.appendChild(nameCell);
-                row.appendChild(emailCell);
-                row.appendChild(actionsCell);
+                const subtotal = document.createElement("td");
+                subtotal.textContent = order['subtotal'];
+                subtotal.style = "background-color: #fff;border: 1px solid #ddd;"
 
-                userTableBody.appendChild(row);
+                const totalamount = document.createElement("td");
+                totalamount.textContent = order['totalamount'];
+                totalamount.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const orderdate = document.createElement("td");
+                orderdate.textContent = order['orderdate'];
+                orderdate.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                row.appendChild(orderdetailid);
+                row.appendChild(orderid);
+                row.appendChild(userid);
+                row.appendChild(productid);
+                row.appendChild(quantity);
+                row.appendChild(subtotal);
+                row.appendChild(totalamount);
+                row.appendChild(orderdate);
+
+                OrderTableBody.appendChild(row);
             });
         }
 
@@ -789,8 +818,8 @@
                 }
 
                 const data = await response.json();
-                document.getElementById("login-form").style="display:flex;flex-direction:column";
-                document.getElementById("signup-form").style.display="none";
+                document.getElementById("login-form").style = "display:flex;flex-direction:column";
+                document.getElementById("signup-form").style.display = "none";
 
             } catch (error) {
                 console.error('Signup error:', error);
@@ -828,7 +857,7 @@
                 const data = await response.json();
                 setAuthToken(data['access_token']);
 
-                document.getElementById('user').textContent = data['username']+'!';
+                document.getElementById('user').textContent = data['username'] + '!';
                 document.querySelector('h2').style.display = 'block';
 
                 document.getElementById('users').classList.remove('hidden');
@@ -837,7 +866,8 @@
 
                 document.getElementById('login-email').value = '';
                 document.getElementById('login-password').value = '';
-                document.getElementById('login-form').style.display="none";
+                document.getElementById('login-form').style.display = "none";
+                document.getElementById('app-layout').style = "display: flex; flex-direction: row;";
                 displayValues();
 
             } catch (error) {
@@ -846,7 +876,7 @@
             }
         }
 
-        function displayValues(){
+        function displayValues() {
             fetchUsers();
             fetchProducts();
             fetchOrders();
@@ -860,9 +890,9 @@
             signupForm.addEventListener('submit', signup);
         });
 
-        document.getElementById("login-n-signup").addEventListener("click", function(e){
-            document.getElementById("login-form").style.display="none";
-            document.getElementById("signup-form").style="display:flex;flex-direction:column";
+        document.getElementById("login-n-signup").addEventListener("click", function (e) {
+            document.getElementById("login-form").style.display = "none";
+            document.getElementById("signup-form").style = "display:flex;flex-direction:column";
 
         });
 

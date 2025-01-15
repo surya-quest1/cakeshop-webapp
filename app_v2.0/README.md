@@ -13,5 +13,22 @@ Follow the install guide specified in app_v1.0 README.md
 ![1](../assets/6.png)
 
 - We use the methods provided in `boto3` package to access our bucket. Specify the access tokens and URI in the .env file in the application directory.
+- Proper security ACL's are specified for each image and can be only accessed by public for reading the object.
 
-
+Bucket policy :
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Statement1",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::cakeappbucket/*"
+        }
+    ]
+}
+```
