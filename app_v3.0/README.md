@@ -10,6 +10,8 @@ Create a simple front-end web interface to interact with your backend, allowing 
 ```
 http://cakeshop-frontend.s3-website-us-east-1.amazonaws.com/
 ```
+- Click [here](http://cakeshop-frontend.s3-website-us-east-1.amazonaws.com/) to redirect to the aboveurl.
+
 - You can either signup as a new user or login in through the application as a SuperUser, which gives you access to the frontend.
 
 - Login in using the credentials :   
