@@ -1,26 +1,40 @@
-from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask import Flask,request,jsonify,render_template,Response
+from flask_jwt_extended import JWTManager,create_access_token, jwt_required, get_jwt_identity
 from dotenv import load_dotenv
-from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 import os
 import re
+import uuid
+import boto3, botocore
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+from flask_cors import CORS
 from datetime import timedelta
-
 
 load_dotenv()
 DB_CONNECTION_STRING = os.getenv('DB_CONNECTION_STRING')
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
 app = Flask(__name__)
+CORS(app)
+
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 jwt = JWTManager(app)
-
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+)
 conn = psycopg2.connect(DB_CONNECTION_STRING)
 cur = conn.cursor()
 
+@app.before_request
+def handle_preflight():
+    if request.method.lower() == 'options':
+        print("Received options")
+        
 def validate_email_format(email):
     pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
     return re.match(pattern, email) is not None
@@ -29,6 +43,34 @@ def validate_password(password):
     if len(password) < 8:
         return False
     return True
+
+def upload_file_to_s3(file):
+    filename = secure_filename(file.filename)
+    try:
+        s3.upload_fileobj(
+            file,
+            os.getenv("AWS_BUCKET_NAME"),
+            file.filename,
+        )
+
+    except Exception as e:
+        print("Something Happened: ", e)
+        return e
+
+    return file.filename
+
+def get_s3_url(file):
+    
+    output = upload_file_to_s3(file) 
+
+    if file:    
+        if output:
+           print(f"Success upload! Image URL : {output}")
+        else:
+            print("Unable to upload, try again")
+            
+    image_url = f"https://{os.getenv('AWS_BUCKET_NAME')}.s3.us-east-1.amazonaws.com/"+output
+    return image_url
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -46,17 +88,19 @@ def signup():
         if not validate_password(data['password']):
             return jsonify({'error': 'password should be atleast 8 characters'}), 400
         
-        
-        cur.execute("SELECT * FROM SuperUsers WHERE email = %s", (data['email'],))
+        cur.execute(f"SELECT * FROM SuperUsers WHERE email = '{data['email']}'")
         if cur.fetchone():
             return jsonify({'error': 'email already registered'}), 400
-
+        conn.commit()
+        
         password_enc = generate_password_hash(data['password'])
+        
         query = " INSERT INTO SuperUsers (Username, Email, Password) VALUES (%s, %s, %s) RETURNING UserID, Username, Email;"
         cur.execute(query, (data['username'], data['email'], password_enc))
         conn.commit()
         new_user = cur.fetchone()
-        return jsonify({col:val for col,val in zip(['userid','username','email'],new_user)})
+        
+        return jsonify({col:val for col,val in zip(['userid','username','email'],new_user)}),200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -76,7 +120,7 @@ def login():
         if user and (check_password_hash(user[3], data['password']) or (user[3]==data['password'])) :
             access_token = create_access_token(identity=user[2])
             
-            return jsonify({'access_token': access_token}), 200
+            return jsonify({'username':user[1],'access_token': access_token}), 200
         
         return jsonify({'error': 'Invalid credentials'}), 400
     
@@ -129,28 +173,31 @@ def update_user(user_id):
         cur.execute(f"SELECT * FROM SuperUsers WHERE email = '{current_user_id}'")   
         data = cur.fetchone()
         conn.commit()
+        
         if current_user_id not in data:
             return jsonify({'error': 'Unauthorized'}), 400
             
         input_params = ['username', 'email', 'password']
         update_params = []
         values = []
+        
         data = request.form
         print(data)
+        
+        
         for field in input_params:
             if field in data:
-                
+                update_params.append(f"{field} = %s")
                 if field == 'email' and not validate_email_format(data['email']):
                     return jsonify({'error': 'Invalid email format'}), 400
                 
                 if field == 'password':
-                    if not validate_password(data['password']):
-                        return jsonify({'error': 'Invalid password format'}), 400
-                    data[field] = generate_password_hash(data[field])
+                    password = generate_password_hash(data[field])
+                    values.append(password)
+                    continue
                 
-                update_params.append(f"{field} = %s")
                 values.append(data[field])
-        
+                
         if not update_params:
             return jsonify({'error': 'No valid fields to update'}), 400
 
@@ -176,15 +223,17 @@ def delete_user(user_id):
         
         if current_user_id not in data:
             return jsonify({'error': 'Unauthorized'}), 400
-        orderdet_delete_query = "DELETE FROM OrderDetails WHERE OrderID IN (SELECT OrderID FROM Orders WHERE UserID = %s);"
-        cur.execute(orderdet_delete_query,user_id)
         
-        order_delete_query = "DELETE from Orders where UserID = %s"
+        orderdet_delete_query = f"DELETE FROM OrderDetails WHERE OrderID IN (SELECT OrderID FROM Orders WHERE UserID = {str(user_id)});"
+        cur.execute(orderdet_delete_query)
+        conn.commit()
+        
+        order_delete_query = f"DELETE from Orders where UserID = {str(user_id)};"
         cur.execute(order_delete_query,user_id)
+        conn.commit()
         
-        user_delete_query = "DELETE from Users where UserID = %s"
+        user_delete_query = f"DELETE from Users where UserID = {str(user_id)};"
         cur.execute(user_delete_query,user_id)
-        
         conn.commit()
         
         return jsonify({'status': 'Deleted Successfully'}), 200
@@ -205,24 +254,33 @@ def create_product():
         if current_user_id not in data:
             return jsonify({'error': 'Unauthorized'}), 400
         
-        data = request.get_json()
-        required_fields = ['productname', 'description', 'price', 'stock']
+        data = request.form
+        
+        file = request.files['image']
+        
+        print(data,file)
+        if file:
+            image_url = get_s3_url(file)
+            
+        required_fields = ['name', 'description', 'price', 'stock']
         if False in [field in data for field in required_fields]:
             return jsonify({'error': 'Missing required fields'}), 400
         
-        query = "INSERT INTO Products (ProductName, Description, Price, Stock) \
-            VALUES (%s, %s, %s, %s) RETURNING *; """
-            
+        query = "INSERT INTO Products (ProductName, Description, Price, Stock,ImageUrl) VALUES (%s, %s, %s, %s, %s) RETURNING *; "
+
         cur.execute(query, (
-            data['productname'],
+            data['name'],
             data['description'],
             data['price'],
-            data['stock']
+            data['stock'],
+            str(image_url)
         ))
+        
         conn.commit()
         new_product = cur.fetchone()
         
         return jsonify(new_product), 200
+    
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -243,15 +301,21 @@ def update_product(product_id):
         update_params = []
         values = []
         data = request.form
-        print(data)
+                    
         for field in product_params:
             if field in data:              
                 update_params.append(f"{field} = %s")
                 values.append(data[field])
         
-        if not update_params:
-            return jsonify({'error': 'No valid fields to update'}), 400
-
+        try:
+            file = request.files['image']
+            if file:
+                image_url = get_s3_url(file)
+                update_params.append(f'imageurl = %s')
+                values.append(str(image_url))
+        except:
+            print('No image provided!')
+            
         values.append(product_id)
         query = f" UPDATE Products SET {', '.join(update_params)} WHERE ProductID = %s ;"""
         cur.execute(query, values)
@@ -262,6 +326,32 @@ def update_product(product_id):
     except Exception as e:
             return jsonify({'error': str(e)}), 500
         
+@app.route('/products/<product_id>',methods=['DELETE'])
+@jwt_required()
+def delete_product(product_id):
+    try:
+        current_user_id = get_jwt_identity()
+        
+        cur.execute(f"SELECT * FROM SuperUsers WHERE email = '{current_user_id}'")   
+        data = cur.fetchone()
+        conn.commit()
+        
+        if current_user_id not in data:
+            return jsonify({'error': 'Unauthorized'}), 400
+               
+        order_delete_query = "DELETE from OrderDetails where ProductID = %s"
+        cur.execute(order_delete_query,product_id)
+        conn.commit()
+        
+        user_delete_query = "DELETE from Products where ProductID = %s"
+        cur.execute(user_delete_query,product_id)
+        conn.commit()
+        
+        return jsonify({'status': 'Deleted Successfully'}), 200
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 @app.route('/orders',methods=['POST'])
 @jwt_required()
@@ -276,7 +366,6 @@ def create_orders():
             return jsonify({'error': 'Unauthorized'}), 400
         
         data = request.get_json()
-        print(data)
         total_amount = 0
         order_details = []
 
@@ -335,7 +424,7 @@ def display_table(table_name):
         query = f"SELECT * FROM {table_name};"
         
         if table_name=="accounts":
-            query = f"SELECT * FROM orderdetails JOIN orders ON orderdetails.orderid = orders.orderid"
+            query = f"SELECT * FROM orderdetails JOIN orders ON orderdetails.orderid = orders.orderid;"
         else:
             query = f"SELECT * FROM {table_name};"
             
@@ -346,12 +435,12 @@ def display_table(table_name):
         records = cur.fetchall()
         
         data = [{j:k for j,k in zip(column_names,record)} for record in records]
-        
+        return jsonify(data),200
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-    return jsonify(data)
 
 
 if __name__ == '__main__':
-    app.run(port=8001,debug=True)
+    app.run(port=5000,debug=True)

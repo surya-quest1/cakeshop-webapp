@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cake Shop Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body style="font-family: Jost, sans-serif; margin: 0;padding: 0;">
+    <header style="padding: 10px;text-align: center;">
+        <h1>Cake Shop Management System</h1>
+        <nav>
+            <div id="login-n-signup" style="font-size: 12px;">New User? <button
+                    style="background-color:#fff;color: rgb(73, 39, 197);border: none">Sign up here</button>
+            </div>
+            <div style="display:flex; flex-direction: row; justify-content: center;">
+                <form id="login-form" style="display:flex; flex-direction: column;">
+                    <input type="text" id="login-email" placeholder="Email" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="text" id="login-password" placeholder="Password" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <button type="submit"
+                        style="background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;">Login</button>
+                </form>
+
+                <form id="signup-form" style="display:none; flex-direction: column;">
+                    <input type="text" id="signup-username" placeholder="Username" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="text" id="signup-email" placeholder="Email" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="text" id="signup-password" placeholder="Password" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <button type="submit"
+                        style="background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;">Sign
+                        Up</button>
+                </form>
+            </div>
+
+
+        </nav>
+
+        <h2 style="display: none;">Hello <span id="user" style="color:#ee6767"></span></h2>
+
+    </header>
+    <div style="display: flex; flex-direction: row;">
+        <main style="display:flex;flex-direction: column;margin: auto;width: 60%; padding: 20px;">
+            <section id="users" class="hidden">
+                <h2>Users</h2>
+                <form id="user-form">
+                    <input type="text" id="user-name" placeholder="Name" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="email" id="user-email" placeholder="Email" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="text" id="user-password" placeholder="Password" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <button type="submit" id="create-user-button"
+                        style="background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;">Create
+                        User</button>
+                </form>
+                <div id="create-user-result"></div>
+                <h4>User information :</h4>
+                <table id="user-table" border="1">
+                    <thead style="background-color: #f9fafb;">
+                        <tr>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                ID</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Name</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Email</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <br>
+                <table id="update-user-table" style="display: none;">
+                    <thead style="background-color: #f9fafb;">
+                        <tr>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                ID</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Name</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Email</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Password</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="transition: background-color 0.15s ease;">
+                            <td style="background-color: #fff;border: 1px solid #ddd;" id="update-user-id-column">id
+                            </td>
+                            <td style="background-color: #fff;border: 1px solid #ddd;"><input
+                                    style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
+                                    type="text" id="update-user-name-column"></td>
+                            <td style="background-color: #fff;border: 1px solid #ddd;"><input
+                                    style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
+                                    type="text" id="update-user-email-column"></td>
+                            <td style="background-color: #fff;border: 1px solid #ddd;"><input
+                                    style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
+                                    type="text" id="update-user-password-column"></td>
+                            <td style="background-color: #fff;border: 1px solid #ddd;"><button
+                                    style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
+                                    type="submit" id="update-user-button"
+                                    style="background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;">Update</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="update-user-result"></div>
+
+            </section>
+
+            <section id="products" class="hidden">
+                <h2>Products</h2>
+                <form id="product-form" enctype="multipart/form-data">
+                    <input type="text" id="product-name" placeholder="Product Name" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="text" id="product-desc" placeholder="Desc" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="number" id="product-stock" placeholder="Stock" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="number" id="product-price" placeholder="Price" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <!-- <div> -->
+                    <!-- <label for="product-image">Upload Your Image File : </label> -->
+                    <input type="file" id="product-image" name="product-image-file" placeholder="Image" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <!-- </div> -->
+                    <button type="submit" id="create-product-button"
+                        style="background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;">
+                        Create Product
+                    </button>
+                </form>
+
+                <div id="create-product-result"></div>
+                <h4>Product information :</h4>
+                <table id="product-table" border="1" style="margin-bottom: 50px;">
+                    <thead style="background-color: #f9fafb;">
+                        <tr>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                ProductID</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                ProductName</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Description</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Price</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Stock</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Image</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <table id="update-product-table" style="display: none;margin: auto;width: 60%; ">
+                    <thead style="background-color: #f9fafb;">
+                        <tr>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                ProductID</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                ProductName</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Description</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Price</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Stock</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Image</th>
+                            <th
+                                style="text-align: left; padding: 16px; font-weight: 600;background-color: #fff;border: 1px solid #ddd;font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody border="1">
+                        <tr>
+                            <td id="update-product-id-column">id</td>
+                            <td><input
+                                    style="vertical-align: middle;padding: 10px;    background-color: #fff;border: 1px solid #ddd;"
+                                    type="text" id="update-product-name-column"></td>
+                            <td><input
+                                    style="vertical-align: middle;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
+                                    type="text" id="update-product-desc-column"></td>
+                            <td><input
+                                    style="vertical-align: middle;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
+                                    type="text" id="update-product-price-column"></td>
+                            <td><input
+                                    style="vertical-align: middle;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
+                                    type="text" id="update-product-stock-column"></td>
+                            <td><input
+                                    style="vertical-align: middle;padding: 10px;background-color: #fff;border: 1px solid #ddd;"
+                                    type="file" id="update-product-image-column" name="product-image-file"
+                                    placeholder="Image" required >
+                            </td>
+
+                            <td><button type="submit" id="update-product-button"
+                                    style="background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;">Update</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="update-product-result"></div>
+            </section>
+
+            <section id="product-gallery"></section>
+
+            <section id="orders" class="hidden">
+                <h2>Orders</h2>
+                <form id="order-form">
+                    <input type="text" id="order-user" placeholder="User ID" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <input type="text" id="order-product" placeholder="Product ID" required
+                        style="vertical-align: middle;margin: 10px;padding: 10px;background-color: #fff;border: 1px solid #ddd;">
+                    <button type="submit"
+                        style="background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;">Create
+                        Order</button>
+                </form>
+                <ul id="order-list"></ul>
+                <table id="order-table" border="1">
+                    <thead>
+                        <tr>
+                            <th>Order Detail ID</th>
+                            <th>Order ID</th>
+                            <th>User ID</th>
+                            <th>Product ID</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </section>
+        </main>
+        <div style="display: none;">
+            Hello
+        </div>
+    </div>
+
+
+    <script>
+        const apiBaseUrl = "http://3.82.116.134";
+
+        async function fetchUsers() {
+            await fetch(`${apiBaseUrl}/data/users`, {
+                headers: getAuthHeaders()
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    displayUsers(data);
+                })
+                .catch(error => {
+                    console.error("Error fetching users:", error);
+                });
+        }
+
+        async function fetchOrders() {
+            await fetch(`${apiBaseUrl}/data/accounts`, {
+                headers: getAuthHeaders()
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    // displayOrders(data);
+                })
+                .catch(error => {
+                    console.error("Error fetching users:", error);
+                });
+
+        }
+
+        async function fetchProducts() {
+            await fetch(`${apiBaseUrl}/data/products`, {
+                headers: getAuthHeaders()
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    displayProducts(data);
+                })
+                .catch(error => {
+                    console.error("Error fetching users:", error);
+                });
+        }
+
+
+        // User functions
+        async function onCreateUserClick(event) {
+            event.preventDefault();
+
+            const resultDiv = document.getElementById("create-user-result");
+
+            const username = document.getElementById("user-name").value.trim();
+            const email = document.getElementById("user-email").value.trim();
+            const password = document.getElementById("user-password").value.trim();
+
+            if (!username || !email || !password) {
+                resultDiv.textContent = "All fields are required.";
+                return;
+            }
+
+            if (password.length < 8) {
+                resultDiv.textContent = "Password must be at least 8 characters long.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('password', password);
+
+            createUser(formData);
+        }
+
+        async function createUser(userData) {
+            const resultDiv = document.getElementById("create-user-result");
+
+
+            const response = await fetch(`${apiBaseUrl}/users`, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                },
+                body: userData,
+            });
+
+            document.getElementById("user-form").reset();
+            
+            displayValues();
+        }
+
+        document.getElementById("user-form").addEventListener("submit", onCreateUserClick);
+
+
+
+        document.getElementById('user-table').addEventListener('click', function (event) {
+            if (event.target.tagName === 'BUTTON' && event.target.textContent === 'Update') {
+                const row = event.target.closest('tr');
+                const userId = row.cells[0].textContent;
+                const name = row.cells[1].textContent;
+                const emailId = row.cells[2].textContent;
+
+                document.getElementById('update-user-table').style.display = '';
+                document.getElementById('update-user-id-column').textContent = userId;
+                document.getElementById('update-user-name-column').value = name;
+                document.getElementById('update-user-email-column').value = emailId;
+            }
+        });
+
+        document.getElementById("update-user-button").addEventListener("click", updateUser);
+
+
+        async function updateUser() {
+
+            const userId = document.getElementById('update-user-id-column').textContent
+
+            const username = document.getElementById("update-user-name-column").value.trim();
+            const email = document.getElementById("update-user-email-column").value.trim();
+            const password = document.getElementById("update-user-password-column").value.trim();
+            const resultDiv = document.getElementById("update-user-result");
+
+            if (!username || !email || !password) {
+                resultDiv.textContent = "All fields are required.";
+                return;
+            }
+
+            if (password.length < 8) {
+                resultDiv.textContent = "Password must be at least 8 characters long.";
+                return;
+            }
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('password', password);
+
+            const response = await fetch(`${apiBaseUrl}/users/u/${userId}`, {
+                method: "PUT",
+                headers: getAuthHeaders(),
+                body: formData,
+            });
+
+            resultDiv.textContent = "Successfully updated User!";
+            
+            displayValues();
+
+        }
+
+
+        document.getElementById('user-table').addEventListener('click', function (event) {
+            if (event.target.tagName === 'BUTTON' && event.target.textContent === 'Delete') {
+                const row = event.target.closest('tr');
+                const userId = row.cells[0].textContent;
+
+                console.log('User ID to delete:', userId);
+                deleteUser(userId);
+            }
+        });
+
+        async function deleteUser(userId) {
+            const response = await fetch(`${apiBaseUrl}/users/u/${userId}`, {
+                method: "DELETE",
+                headers: getAuthHeaders(),
+            });
+            document.getElementById("user-form").reset();
+            
+            displayValues();
+        }
+
+        //Product functions
+        document.getElementById('product-form').addEventListener('submit', onCreateProductClick);
+
+        async function onCreateProductClick(e) {
+            e.preventDefault();
+
+            try {
+                const productName = document.getElementById('product-name').value;
+                const productDesc = document.getElementById('product-desc').value;
+                const productStock = document.getElementById('product-stock').value;
+                const productPrice = document.getElementById('product-price').value;
+                const productImage = document.getElementById('product-image').files[0];
+
+                if (!productName || !productDesc || !productStock || !productPrice || !productImage) {
+                    throw new Error('Fill in all the fields');
+                }
+
+                const formData = new FormData();
+                formData.append('name', productName);
+                formData.append('description', productDesc);
+                formData.append('stock', productStock);
+                formData.append('price', productPrice);
+                formData.append('image', productImage);
+
+                const response = await fetch(`${apiBaseUrl}/products`, {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                console.log('Product created successfully:', result);
+
+            } catch (error) {
+                console.error('Error creating product:', error);
+            }finally{
+                
+                displayValues();
+            }
+        };
+
+        document.getElementById('product-table').addEventListener('click', function (event) {
+            if (event.target.tagName === 'BUTTON' && event.target.textContent === 'Delete') {
+                const row = event.target.closest('tr');
+                const productId = row.cells[0].textContent;
+
+                console.log('Product ID to delete:', productId);
+                deleteProduct(productId);
+            }
+        });
+
+        async function deleteProduct(productId) {
+            const response = await fetch(`${apiBaseUrl}/products/${productId}`, {
+                method: "DELETE",
+                headers: getAuthHeaders(),
+            });
+            document.getElementById("product-form").reset();
+
+            console.log(response.json);
+            
+            displayValues();
+        }
+
+        document.getElementById('product-table').addEventListener('click', function (event) {
+            if (event.target.tagName === 'BUTTON' && event.target.textContent === 'Update') {
+                const row = event.target.closest('tr');
+                const productId = row.cells[0].textContent;
+                const productName = row.cells[1].textContent;
+                const description = row.cells[2].textContent;
+                const stock = row.cells[4].textContent;
+                const price = row.cells[3].textContent;
+                // const Image = row.cells[2].textContent;
+
+
+                document.getElementById('update-product-table').style.display = '';
+                document.getElementById('update-product-id-column').textContent = productId;
+                document.getElementById('update-product-desc-column').value = description;
+                document.getElementById('update-product-name-column').value = productName;
+                document.getElementById('update-product-stock-column').value = stock;
+                document.getElementById('update-product-price-column').value = price;
+            }
+        });
+
+        document.getElementById("update-product-button").addEventListener("click", updateProduct);
+
+        async function updateProduct(e) {
+            e.preventDefault();
+            try {
+                const productId = document.getElementById('update-product-id-column').textContent;
+                const productName = document.getElementById('update-product-name-column').value;
+                const productDesc = document.getElementById('update-product-desc-column').value;
+                const productStock = document.getElementById('update-product-stock-column').value;
+                const productPrice = document.getElementById('update-product-price-column').value;
+                const productImage = document.getElementById('update-product-image-column').files[0];
+
+                // if (!productName || !productDesc || !productStock || !productPrice || !productImage) {
+                //     throw new Error('Fill in all the fields');
+                // }
+
+                const formData = new FormData();
+                formData.append('productname', productName);
+                formData.append('description', productDesc);
+                formData.append('stock', productStock);
+                formData.append('price', productPrice);
+                formData.append('image', productImage);
+                console.log(formData);
+                const response = await fetch(`${apiBaseUrl}/products/${productId}`, {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json();
+                console.log('Product created successfully:', result);
+
+            } catch (error) {
+                console.error('Error creating product:', error);
+            }finally{
+                
+                displayValues();
+            }
+        };
+
+        async function displayUsers(users) {
+            const userTableBody = document.querySelector("#user-table tbody");
+
+            userTableBody.innerHTML = "";
+
+            users.forEach(user => {
+                const row = document.createElement("tr");
+
+                const idCell = document.createElement("td");
+                idCell.textContent = user['userid'];
+                idCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const nameCell = document.createElement("td");
+                nameCell.textContent = user['username'];
+                nameCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const emailCell = document.createElement("td");
+                emailCell.textContent = user['email'];
+                emailCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const actionsCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                const updateButton = document.createElement("button");
+
+                deleteButton.textContent = "Delete";
+                deleteButton.style = "background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;"
+
+                updateButton.textContent = "Update";
+                updateButton.style = "background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;"
+
+                actionsCell.appendChild(deleteButton);
+                actionsCell.appendChild(updateButton);
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(emailCell);
+                row.appendChild(actionsCell);
+
+                userTableBody.appendChild(row);
+            });
+        }
+
+        async function displayProducts(products) {
+            const productGalleryList = document.getElementById("product-gallery");
+            const productTableBody = document.querySelector("#product-table tbody");
+
+            productGalleryList.innerHTML = "";
+            productTableBody.innerHTML = "";
+
+            products.forEach(product => {
+                const li = document.createElement("li");
+                const div = document.createElement("div");
+                const div1 = document.createElement("div");
+
+                const row = document.createElement("tr");
+
+                const idCell = document.createElement("td");
+                idCell.textContent = product['productid'];
+                idCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const nameCell = document.createElement("td");
+                nameCell.textContent = product['productname'];
+                nameCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const descCell = document.createElement("td");
+                descCell.textContent = product['description'];
+                descCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const priceCell = document.createElement("td");
+                priceCell.textContent = product['price'];
+                priceCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const stockCell = document.createElement("td");
+                stockCell.textContent = product['stock'];
+                stockCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const actionsCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                const updateButton = document.createElement("button");
+
+                deleteButton.textContent = "Delete";
+                deleteButton.style = "background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;"
+
+                updateButton.textContent = "Update";
+                updateButton.style = "background-color: #555;color: white;border: none;padding: 10px;margin: 5px;cursor: pointer;"
+
+                actionsCell.appendChild(deleteButton);
+                actionsCell.appendChild(updateButton);
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(descCell);
+                row.appendChild(priceCell);
+                row.appendChild(stockCell);
+
+
+                div.className = "image-gallery";
+                div.style = "margin: 5px;border: 1px solid #ccc;float: left;width: 180px;";
+
+                const a = document.createElement("a");
+                a.href = product['imageurl'];
+                a.target = "_blank";
+
+                const img = document.createElement("img");
+                img.src = product['imageurl'];
+                img.alt = product['productname'];
+                img.style = "width:180px;height: 180px;"
+
+                a.appendChild(img);
+                div1.appendChild(a);
+                div.appendChild(div1);
+
+                row.append(div1)
+                row.appendChild(actionsCell);
+
+                productTableBody.appendChild(row);
+                productGalleryList.appendChild(div);
+
+            });
+        }
+
+        async function displayOrders(users) {
+            const userTableBody = document.querySelector("#user-table tbody");
+
+            userTableBody.innerHTML = "";
+
+            users.forEach(user => {
+                const row = document.createElement("tr");
+
+                const idCell = document.createElement("td");
+                idCell.textContent = user[0];
+                idCell.style = "background-color: #fff;border: 1px solid #ddd;"
+                const nameCell = document.createElement("td");
+                nameCell.textContent = user[1];
+                nameCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const emailCell = document.createElement("td");
+                emailCell.textContent = user[2];
+                emailCell.style = "background-color: #fff;border: 1px solid #ddd;"
+
+                const actionsCell = document.createElement("td");
+                const deleteButton = document.createElement("button");
+                const updateButton = document.createElement("button");
+
+                deleteButton.textContent = "Delete";
+                // deleteButton.onclick = () => deleteUser(user[0]);
+
+                updateButton.textContent = "Update";
+                // updateButton.onclick = () => updateUser(user[0]);
+
+                actionsCell.appendChild(deleteButton);
+                actionsCell.appendChild(updateButton);
+                row.appendChild(idCell);
+                row.appendChild(nameCell);
+                row.appendChild(emailCell);
+                row.appendChild(actionsCell);
+
+                userTableBody.appendChild(row);
+            });
+        }
+
+
+        const STORAGE_TOKEN = "password";
+
+        function setAuthToken(token) {
+            localStorage.setItem(STORAGE_TOKEN, token);
+        }
+
+        function getAuthToken() {
+            return localStorage.getItem(STORAGE_TOKEN);
+        }
+
+        function getAuthHeaders() {
+            const token = getAuthToken();
+            return {
+                'Accept': 'application/json',
+                'Authorization': token ? `Bearer ${token}` : '',
+            };
+        }
+
+        async function signup(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('signup-username').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value.trim();
+
+            if (!username || !email || !password) {
+                alert('All fields are required');
+                return;
+            }
+
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('username', username);
+                formData.append('email', email);
+                formData.append('password', password);
+
+                const response = await fetch(`${apiBaseUrl}/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById("login-form").style="display:flex;flex-direction:column";
+                document.getElementById("signup-form").style.display="none";
+
+            } catch (error) {
+                console.error('Signup error:', error);
+            }
+        }
+
+        async function login(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!email || !password) {
+                alert('Both email and password are required');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('password', password);
+
+                const response = await fetch(`${apiBaseUrl}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                setAuthToken(data['access_token']);
+
+                document.getElementById('user').textContent = data['username']+'!';
+                document.querySelector('h2').style.display = 'block';
+
+                document.getElementById('users').classList.remove('hidden');
+                document.getElementById('products').classList.remove('hidden');
+                document.getElementById('orders').classList.remove('hidden');
+
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+                document.getElementById('login-form').style.display="none";
+                displayValues();
+
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Failed to login. Please check your credentials and try again.');
+            }
+        }
+
+        function displayValues(){
+            fetchUsers();
+            fetchProducts();
+            fetchOrders();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+
+            loginForm.addEventListener('submit', login);
+            signupForm.addEventListener('submit', signup);
+        });
+
+        document.getElementById("login-n-signup").addEventListener("click", function(e){
+            document.getElementById("login-form").style.display="none";
+            document.getElementById("signup-form").style="display:flex;flex-direction:column";
+
+        });
+
+    </script>
+</body>
+
+</html>

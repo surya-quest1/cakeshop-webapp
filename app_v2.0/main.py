@@ -1,26 +1,40 @@
-from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask import Flask,request,jsonify,render_template,Response
+from flask_jwt_extended import JWTManager,create_access_token, jwt_required, get_jwt_identity
 from dotenv import load_dotenv
-from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
 import os
 import re
+import uuid
+import boto3, botocore
+from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+from flask_cors import CORS
 from datetime import timedelta
-
 
 load_dotenv()
 DB_CONNECTION_STRING = os.getenv('DB_CONNECTION_STRING')
 JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
 app = Flask(__name__)
+CORS(app)
+
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
 
 jwt = JWTManager(app)
-
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+)
 conn = psycopg2.connect(DB_CONNECTION_STRING)
 cur = conn.cursor()
 
+@app.before_request
+def handle_preflight():
+    if request.method.lower() == 'options':
+        print("Received options")
+        
 def validate_email_format(email):
     pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
     return re.match(pattern, email) is not None
@@ -29,6 +43,34 @@ def validate_password(password):
     if len(password) < 8:
         return False
     return True
+
+def upload_file_to_s3(file):
+    filename = secure_filename(file.filename)
+    try:
+        s3.upload_fileobj(
+            file,
+            os.getenv("AWS_BUCKET_NAME"),
+            file.filename,
+        )
+
+    except Exception as e:
+        print("Something Happened: ", e)
+        return e
+
+    return file.filename
+
+def get_s3_url(file):
+    
+    output = upload_file_to_s3(file) 
+
+    if file:    
+        if output:
+           print(f"Success upload! Image URL : {output}")
+        else:
+            print("Unable to upload, try again")
+            
+    image_url = f"https://{os.getenv('AWS_BUCKET_NAME')}.s3.us-east-1.amazonaws.com/"+output
+    return image_url
 
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -205,19 +247,26 @@ def create_product():
         if current_user_id not in data:
             return jsonify({'error': 'Unauthorized'}), 400
         
-        data = request.get_json()
-        required_fields = ['productname', 'description', 'price', 'stock']
+        data = request.form
+        
+        file = request.files['image']
+        if file:
+            image_url = get_s3_url(file)
+            data['imageurl'] = image_url
+            
+        required_fields = ['productname', 'description', 'price', 'stock','imageurl']
         if False in [field in data for field in required_fields]:
             return jsonify({'error': 'Missing required fields'}), 400
         
-        query = "INSERT INTO Products (ProductName, Description, Price, Stock) \
-            VALUES (%s, %s, %s, %s) RETURNING *; """
+        query = "INSERT INTO Products (ProductName, Description, Price, Stock,ImageUrl) \
+            VALUES (%s, %s, %s, %s, %s) RETURNING *; """
             
         cur.execute(query, (
             data['productname'],
             data['description'],
             data['price'],
-            data['stock']
+            data['stock'],
+            data['imageurl']
         ))
         conn.commit()
         new_product = cur.fetchone()
@@ -243,12 +292,18 @@ def update_product(product_id):
         update_params = []
         values = []
         data = request.form
-        print(data)
+                    
         for field in product_params:
             if field in data:              
                 update_params.append(f"{field} = %s")
                 values.append(data[field])
         
+        file = request.files['image']
+        if file:
+            image_url = get_s3_url(file)
+            update_params.append(f"imageurl = %s")
+            values.append(image_url)
+            
         if not update_params:
             return jsonify({'error': 'No valid fields to update'}), 400
 
