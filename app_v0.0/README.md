@@ -64,6 +64,7 @@ RESTful API-based web application using Flask :
     - **PUT** `/products/<product_id>`: Update details of an existing product.
     - **POST** `/orders`: Create a new order for a user.
     - **GET** `/data/<table_name>`: Fetch all records from a specified table.
+    - **GET** `/data/accounts`: Joins the tables OrderDetails and Orders to result the transaction record of each user.
 
 
 
