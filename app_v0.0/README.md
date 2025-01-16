@@ -69,7 +69,7 @@ RESTful API-based web application using Flask :
 
 
 - I've implemented input validation of entries such as username, password, etc ,.
-- Authorization using JWT tokens are implemented using `flask_jwt_extended`.
+- Authentication using JWT tokens are implemented using `flask_jwt_extended`.
 - The SECRET Key for JWT access token generation and CONNECTION String for Postgresql DB needs to be specified in `.env `file under the application directory.
   
 <br>
